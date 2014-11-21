@@ -39,7 +39,9 @@ PowerC is a package of R functions to perform power analysis in comparative meth
 
 
  
-Warning: This code still needs to be fully checked, be aware.
+###Warning:
+	
+	This code still needs to be fully checked, be aware.
 
 
 Note:
@@ -60,7 +62,7 @@ Note:
 	pgls, comparative.data
 
 
-### Exampless
+### Examples:
 	### Required packages:
 	library(caper);library(phytools);library("phylolm")
 	set.seed(111)
