@@ -64,6 +64,7 @@ plot.power.pgls <- function(x, method="sampling"){
                     grid.arrange(p1,p2,p3,p4,ncol=2,nrow=2)
           }
           if (method == "influential"){
+                    .e <- environment()
                     result <- x[[1]]
                     intercept.0 <-  as.numeric(x[[2]][1])
                     beta.0 <-  as.numeric(x[[2]][2])
