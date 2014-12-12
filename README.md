@@ -26,7 +26,7 @@ library(caper);library(phytools);library("phylolm")
 **Simulating data and phylogeny:**
 ```{r}
 set.seed(111)
-N <- 50 # Number of species
+N <- 100 # Number of species
 ### Simulating tree
 tree<-pbtree(n=N)    
 ### Simulating response variable with phylogenetic signal
@@ -55,19 +55,20 @@ abline(mod0,col="red",lwd=3)
 
 **Performing Sensitive Analysis: sampling.pgls**
 ```{r}
-samp1 <- sampling.pgls(y~x,data=regre,phy=tree,times=10,breaks=seq(.1,.9,.1),lambda="ML",names.col="sp")
-### You can also specify the number of replicates per break interval:
-samp2 <- sampling.pgls(y~x,data=regre,phy=tree,times=50,breaks=c(.1,.5,.9),lambda="ML",names.col="sp")
+samp1 <- sampling.pgls(y~x,data=regre,phy=tree,names.col="sp")
+### You can specify the number of replicates per break interval:
+samp2 <- sampling.pgls(y~x,data=regre,phy=tree,times=100,breaks=c(.1,.5,.9),names.col="sp")
+
 ```
 
 **Performing influential analysis: influential.pgls**
 ```{r}
 ### Example: influence.pgls
-influ1 <- influence.pgls(y ~ x,data=regre,phy=tree,lambda="ML")
-### Estimates values:
-influ1$estimates
+influ1 <- influence.pgls(y ~ x,data=regre,phy=tree)
+### Estimated parameters:
+influ1$results
 ### Most influential species:
-influ1[[5]]
+influ1[[4]]
 ```
 
 **Visualizing Results:**
