@@ -18,8 +18,8 @@ influence.pgls <- function(formula,data,phy,lambda="ML",names.col)
           if(class(data)!="data.frame") stop("data data must be of class 'data.frame'")
           else
                     
-          # FULL MODEL calculations:
-          c.data <- comparative.data(phy=phy,data=data,names.col=sp,vcv=T,vcv.dim=3)
+                    # FULL MODEL calculations:
+                    c.data <- comparative.data(phy=phy,data=data,names.col=sp,vcv=T,vcv.dim=3)
           N <- nrow(c.data$data)             # Sample size
           mod.0 <- pgls(formula, data=c.data,lambda=lambda)
           sumMod <- summary(mod.0)
@@ -46,11 +46,12 @@ influence.pgls <- function(formula,data,phy,lambda="ML",names.col)
                     mod <- try(pgls(formula, data=crop.data,lambda),TRUE)
                     if(isTRUE(class(mod)=="try-error")) 
                     {
-                              while(class(mod)=="try-error"){
+                              while(isTRUE(class(mod)=="try-error"))
                                         mod <- try(pgls(formula, data=crop.data,lambda),TRUE)
-                              }
+                              
                     }
-                    
+                    else{
+                              
                               ### Calculating model estimates:
                               sum.Mod <- summary(mod)
                               beta <-    sum.Mod[[c(5,2)]]     # Beta
@@ -66,6 +67,7 @@ influence.pgls <- function(formula,data,phy,lambda="ML",names.col)
                               DFintercepts <- c(DFintercepts,DFint)
                               species <- c(species,sp)
                               p.values <- c( p.values,pval)
+                    }
           }
           # Dataframe with results:
           estimates <- data.frame(species,betas,DFbetas,intercepts,DFintercepts,p.values) 
