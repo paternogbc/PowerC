@@ -53,7 +53,7 @@ abline(mod0,col="red",lwd=3)
 
 ```
 
-**Performing Sensitive Analysis: sampling.pgls**
+**Performing Sensitive Analysis:** `sampling.pgls`
 ```{r}
 samp1 <- sampling.pgls(y~x,data=regre,phy=tree,names.col="sp")
 ### You can specify the number of replicates per break interval:
@@ -61,7 +61,7 @@ samp2 <- sampling.pgls(y~x,data=regre,phy=tree,times=100,breaks=c(.1,.5,.9),name
 
 ```
 
-**Performing influential analysis: influential.pgls**
+**Performing influential analysis:** `influential.pgls`
 ```{r}
 ### Example: influence.pgls
 influ1 <- influence.pgls(y ~ x,data=regre,phy=tree)
