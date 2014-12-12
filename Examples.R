@@ -5,7 +5,7 @@ library(caper);library(phylolm);library(phytools)
 ### Before: copy and run functions: sampling.pgls(); influential.pgls() and plot.power.pgls()
 
 set.seed(111)
-N <- 50 # Number of species
+N <- 100 # Number of species
 ### Simulating tree
 tree<-pbtree(n=N)    
 ### Simulating response variable with phylogenetic signal
@@ -42,4 +42,4 @@ plot.power.pgls(samp1,method="sampling")
 plot.power.pgls(samp2,method="sampling")
 plot.power.pgls(influ1,method="influential")
 
-
+length(unique(influ1$results$sp))

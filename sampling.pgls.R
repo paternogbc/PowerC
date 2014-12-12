@@ -1,7 +1,7 @@
 ## sampling.pgls: Analysis of sampling effort for PGLS linear regression
 ## Author: Gustavo Paterno (paternogbc@gmail.com)
-## Version: 0.7
-## Data created: 10.12.14
+## Version: 0.8
+## Date created: 10.12.14
 
 ## This code is not totally checked, please be aware!
 

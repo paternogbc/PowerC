@@ -1,14 +1,14 @@
 ## influential.pgls: Influential analysis for PGLS linear regression
 ## Author: Gustavo Paterno (paternogbc@gmail.com)
-## Version: 0.1
+## Version: 0.2
 ## Data created: 26.11.14
 
 ## This code is not totally checked, please be aware!
 
 ## Load required packages:
-require(caper)
-require(ggplot2)
-require(gridExtra)
+library(caper)
+library(ggplot2)
+library(gridExtra)
 
 influence.pgls <- function(formula,data,phy,lambda="ML",names.col)
 {
@@ -43,10 +43,11 @@ influence.pgls <- function(formula,data,phy,lambda="ML",names.col)
           # Loop:
           for (i in 1:nrow(c.data$data)){
                     crop.data <- comparative.data(phy=phy,data=data[-i,],names.col=sp,vcv=T,vcv.dim=3)
-                    mod=try(pgls(formula, data=crop.data,lambda),TRUE)
-                    if(isTRUE(class(mod)=="try-error")) { i = i-1 
-                                                          next } 
-                    else { 
+          
+                    mod=1
+                    class(mod)<-"try-error"
+                    while(isTRUE(class(mod)!="try-error")) {   
+                                        mod <- try(pgls(formula, data=crop.data,lambda),TRUE)}
                                         ### Calculating model estimates:
                                         sum.Mod <- summary(mod)
                                         beta <-    sum.Mod[[c(5,2)]]     # Beta
@@ -63,7 +64,7 @@ influence.pgls <- function(formula,data,phy,lambda="ML",names.col)
                                         species <- c(species,sp)
                                         p.values <- c( p.values,pval)
                                         
-                              } 
+                               
           }
           # Dataframe with results:
           estimates <- data.frame(species,betas,DFbetas,intercepts,DFintercepts,p.values) 
