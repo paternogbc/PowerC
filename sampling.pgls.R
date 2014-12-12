@@ -1,6 +1,6 @@
 ## sampling.pgls: Analysis of sampling effort for PGLS linear regression
 ## Author: Gustavo Paterno (paternogbc@gmail.com)
-## Version: 0.6
+## Version: 0.7
 ## Data created: 10.12.14
 
 ## This code is not totally checked, please be aware!
@@ -84,5 +84,7 @@ sampling.pgls <- function(formula,data,phy,times=20,breaks=c(.1,.3,.5,.7,.9),lam
           param0 <- data.frame(beta.0,intercept.0)
           beta_IC <- data.frame(beta.low=beta.0.low,beta.up=beta.0.up)
           return(list(original_model_estimates=param0,original_beta_95_IC=beta_IC,results=estimates,power_analysis=power.tab))
+
+  
 }
 
