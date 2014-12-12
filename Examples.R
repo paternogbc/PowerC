@@ -28,16 +28,18 @@ summary(mod0)
 samp1 <- sampling.pgls(y~x,data=regre,phy=tree,names.col="sp")
 
 ### You can specify the number of replicates per break interval:
-samp2 <- sampling.pgls(y~x,data=regre,phy=tree,times=50,breaks=c(.1,.5,.9),lambda="ML",names.col="sp")
+samp2 <- sampling.pgls(y~x,data=regre,phy=tree,times=100,breaks=c(.1,.5,.9),names.col="sp")
 
 ### Example: influence.pgls
 influ1 <- influence.pgls(y ~ x,data=regre,phy=tree)
-### Estimates values:
-influ1$estimates
+### Estimated parameters:
+influ1$results
 ### Most influential species:
-influ1[[5]]
+influ1[[4]]
 
 ### Visualizing Results:
 plot.power.pgls(samp1,method="sampling")
 plot.power.pgls(samp2,method="sampling")
 plot.power.pgls(influ1,method="influential")
+
+

@@ -12,10 +12,10 @@ require(gridExtra)
 ### Start:
 plot.power.pgls <- function(x, method="sampling"){
           if (method == "sampling"){
-                    result <- x[[1]]
-                    beta.0 <- as.numeric(x[[2]][1])
-                    beta.0.low <- as.numeric(x[[2]][2])
-                    beta.0.up <- as.numeric(x[[2]][3])
+                    result <- x$results
+                    beta.0 <- as.numeric(x[[1]][1])
+                    beta.0.low <- as.numeric(x[[2]][1])
+                    beta.0.up <- as.numeric(x[[2]][2])
                     .e <- environment()
                     p1 <- ggplot(result,aes(x=betas),environment=.e)+
                               geom_density(size=.5, fill="tomato",alpha=.5)+
@@ -65,7 +65,7 @@ plot.power.pgls <- function(x, method="sampling"){
           }
           if (method == "influential"){
                     .e <- environment()
-                    result <- x[[1]]
+                    result <- x$results
                     intercept.0 <-  as.numeric(x[[2]][1])
                     beta.0 <-  as.numeric(x[[2]][2])
                     p1 <- ggplot(result,aes(x=betas),environment=.e)+
@@ -76,17 +76,15 @@ plot.power.pgls <- function(x, method="sampling"){
                               geom_density(size=.5, fill="tomato",alpha=.5)+
                               xlab("Intercepts")+
                               geom_vline(xintercept = intercept.0,color="red",linetype=2,size=2)
-                    p3<-qplot(abs(result$betas - beta.0),xlab=("DF Betas"))
-                    p4<-qplot(abs(result$intercepts - intercept.0),xlab=("DF Intercepts"))
-                    result.tab <- data.frame(result,x$data[all.vars(x$formula)])
                     
-                    p5<-ggplot(result.tab,aes(y=y,x=x,colour=abs(DFbetas)))+
+                    result.tab <- data.frame(result,x$data[all.vars(x$formula)])
+                    p3<-ggplot(result.tab,aes(y=y,x=x,colour=abs(DFbetas)))+
                               geom_point(size=3)+
                               scale_colour_gradient( low="black", high="red", space="Lab",name="DF Betas")
-                    p6<-ggplot(result.tab,aes(y=y,x=x,colour=abs(DFintercepts)))+
+                    p4<-ggplot(result.tab,aes(y=y,x=x,colour=abs(DFintercepts)))+
                               geom_point(size=3)+
                               scale_colour_gradient( low="black", high="red", space="Lab",name="DF Intercepts")          
-                              grid.arrange(p1,p2,p3,p4,p5,p6,nrow=3,ncol=2)
+                              grid.arrange(p1,p2,p3,p4,nrow=2,ncol=2)
           }
                     
                     
