@@ -43,28 +43,29 @@ influence.pgls <- function(formula,data,phy,lambda="ML",names.col)
           # Loop:
           for (i in 1:nrow(c.data$data)){
                     crop.data <- comparative.data(phy=phy,data=data[-i,],names.col=sp,vcv=T,vcv.dim=3)
-          
-                    mod=1
-                    class(mod)<-"try-error"
-                    while(isTRUE(class(mod)!="try-error")) {   
-                                        mod <- try(pgls(formula, data=crop.data,lambda),TRUE)}
-                                        ### Calculating model estimates:
-                                        sum.Mod <- summary(mod)
-                                        beta <-    sum.Mod[[c(5,2)]]     # Beta
-                                        intercept <-    sum.Mod[[c(5,1)]]# Intercept
-                                        pval <-    sum.Mod[[c(5,8)]] # p.value
-                                        DFbeta <- beta - beta.0
-                                        DFint  <- intercept - intercept.0
-                                        sp <- phy$tip.label[i]
-                                        ### Storing values for each simulation
-                                        betas <- c(betas,beta)
-                                        intercepts <- c(intercepts,intercept)
-                                        DFbetas <- c(DFbetas,DFbeta)
-                                        DFintercepts <- c(DFintercepts,DFint)
-                                        species <- c(species,sp)
-                                        p.values <- c( p.values,pval)
-                                        
-                               
+                    mod <- try(pgls(formula, data=crop.data,lambda),TRUE)
+                    if(isTRUE(class(mod)=="try-error")) 
+                    {
+                              while(class(mod)=="try-error"){
+                                        mod <- try(pgls(formula, data=crop.data,lambda),TRUE)
+                              }
+                    }
+                    
+                              ### Calculating model estimates:
+                              sum.Mod <- summary(mod)
+                              beta <-    sum.Mod[[c(5,2)]]     # Beta
+                              intercept <-    sum.Mod[[c(5,1)]]# Intercept
+                              pval <-    sum.Mod[[c(5,8)]] # p.value
+                              DFbeta <- beta - beta.0
+                              DFint  <- intercept - intercept.0
+                              sp <- phy$tip.label[i]
+                              ### Storing values for each simulation
+                              betas <- c(betas,beta)
+                              intercepts <- c(intercepts,intercept)
+                              DFbetas <- c(DFbetas,DFbeta)
+                              DFintercepts <- c(DFintercepts,DFint)
+                              species <- c(species,sp)
+                              p.values <- c( p.values,pval)
           }
           # Dataframe with results:
           estimates <- data.frame(species,betas,DFbetas,intercepts,DFintercepts,p.values) 
