@@ -65,7 +65,7 @@ influence.pgls <- function(formula,data,phy,lambda="ML",names.col)
                                         
                               } 
           }
-          # Data frame with results:
+          # Dataframe with results:
           estimates <- data.frame(species,betas,DFbetas,intercepts,DFintercepts,p.values) 
           param0 <- data.frame(intercept.0,beta.0)
           influ.sp.b <- as.character(estimates[order(estimates$DFbetas,decreasing=T)[1:5],]$species)
