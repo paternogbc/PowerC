@@ -73,6 +73,6 @@ sampling.pgls <- function(formula,data,phy,times=20,breaks=c(.1,.3,.5,.7,.9),lam
           estimates <- data.frame(intercepts,betas,p.values,n.removs,n.percents)
           param0 <- data.frame(beta.0,intercept.0)
           beta_IC <- data.frame(beta.low=beta.0.low,beta.up=beta.0.up)
-          return(list(original_model_estimates=param0,beta_IC=beta_IC,results=estimates))
+          return(list(original_model_estimates=param0,original_beta_95_IC=beta_IC,results=estimates))
 }
 

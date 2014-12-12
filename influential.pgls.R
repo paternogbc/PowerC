@@ -2,7 +2,6 @@
 ## Author: Gustavo Paterno (paternogbc@gmail.com)
 ## Version: 0.1
 ## Data created: 26.11.14
-## Last update: 
 
 ## This code is not totally checked, please be aware!
 
@@ -11,7 +10,7 @@ require(caper)
 require(ggplot2)
 require(gridExtra)
 
-influence.pgls <- function(formula,data,phy,lambda=1,names.col)
+influence.pgls <- function(formula,data,phy,lambda="ML",names.col)
 {
           ### Basic error checking:
           if(class(formula)!="formula") stop("Please formula must be class 'forumla'")
@@ -27,6 +26,11 @@ influence.pgls <- function(formula,data,phy,lambda=1,names.col)
           intercept.0 <-    sumMod[[c(5,1)]] # Intercept (full model)
           beta.0 <-    sumMod[[c(5,2)]]      # Beta (full model)
           pval.0 <-    sumMod[[c(5,8)]]      # p.value (full model)
+          sd.beta.0 <- sumMod[[c(5,4)]]      # Standart Error (full model)
+          df.0 <- sumMod[[2]][2] # Degree if Freedon (full model))
+          beta.IC <- qt(0.975,df.0)*sd.beta.0 # Beta CI (full model)
+          beta.0.low <- beta.0 - beta.IC  # Low limit of beta CI (full model)
+          beta.0.up <- beta.0 + beta.IC   # Up limit of beta CI (full model)
           
           # Sampling effort analysis:
           betas <- as.numeric()
@@ -63,10 +67,11 @@ influence.pgls <- function(formula,data,phy,lambda=1,names.col)
           }
           # Data frame with results:
           estimates <- data.frame(species,betas,DFbetas,intercepts,DFintercepts,p.values) 
-          param <- data.frame(intercept.0,beta.0)
-          influ.sp <- as.character(estimates[order(estimates$DFbetas,decreasing=T)[1:5],]$species)
-          
-          return(list(estimates=estimates,ori_coeff=param,data=data,formula=formula,influ.sp=influ.sp))
+          param0 <- data.frame(intercept.0,beta.0)
+          influ.sp.b <- as.character(estimates[order(estimates$DFbetas,decreasing=T)[1:5],]$species)
+          influ.sp.i <- as.character(estimates[order(estimates$DFintercepts,decreasing=T)[1:5],]$species)
+          beta_IC <- data.frame(beta.low=beta.0.low,beta.up=beta.0.up)
+          return(list(formula=formula,original_model_estimates=param0,original_beta_95_IC=beta_IC,most_influential_species=rbind(beta=influ.sp.b,intercept=influ.sp.i),results=estimates,data=data))
           
 }
 
