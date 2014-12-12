@@ -12,11 +12,10 @@ PowerC is a a group of R functions to perform sampling effort analysis in compar
 
 
 ###Examples:
-First copy and run these functions:   
-	1. [sampling.pgls](https://github.com/paternogbc/PowerC/blob/7c03d52ddf6826915a20bf1f24756a1036ac4260/sampling.pgls.R)  
-	2. [influential.pgls](https://github.com/paternogbc/PowerC/blob/master/influential.pgls.R)  
-	3. [plot.power.pgls](https://github.com/paternogbc/PowerC/blob/master/plot.power.pgls.R)  
-
+First copy and run these functions from the repository `PowerC`:   
+	1. `sampling.pgls`  
+          2. `influential.pgls`  
+          3. `plot.power.pgls`  
 
 **Required Packages:**
 ```{r}
