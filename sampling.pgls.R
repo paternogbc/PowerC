@@ -8,7 +8,7 @@
 ## Load required packages:
 library(caper)
 
-sampling.pgls <- function(formula,data,phy,times=5,breaks=c(.1,.3,.5,.7,.9),lambda=1,names.col)
+sampling.pgls <- function(formula,data,phy,times=20,breaks=c(.1,.3,.5,.7,.9),lambda="ML",names.col)
 {
           ### Basic error checking:
           if(class(formula)!="formula") stop("Please formula must be class 'forumla'")
@@ -17,8 +17,8 @@ sampling.pgls <- function(formula,data,phy,times=5,breaks=c(.1,.3,.5,.7,.9),lamb
           if(length(breaks)<2) stop("please include more then one break (eg. breaks=c(.3,.5)") 
           else
                     
-                    # FULL MODEL calculations:
-                    c.data <- comparative.data(phy=phy,data=data,names.col=sp,vcv=T,vcv.dim=3)
+          # FULL MODEL calculations:
+          c.data <- comparative.data(phy=phy,data=data,names.col=sp,vcv=T,vcv.dim=3)
           N <- nrow(c.data$data)             # Sample size
           mod.0 <- pgls(formula, data=c.data,lambda=lambda)
           sumMod <- summary(mod.0)
@@ -71,7 +71,8 @@ sampling.pgls <- function(formula,data,phy,times=5,breaks=c(.1,.3,.5,.7,.9),lamb
           
           # Data frame with results:
           estimates <- data.frame(intercepts,betas,p.values,n.removs,n.percents)
-          param <- data.frame(beta.0,beta.0.low,beta.0.up)
-          return(list(estimates,param))
+          param0 <- data.frame(beta.0,intercept.0)
+          beta_IC <- data.frame(beta.low=beta.0.low,beta.up=beta.0.up)
+          return(list(original_model_estimates=param0,beta_IC=beta_IC,results=estimates))
 }
 

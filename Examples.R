@@ -1,7 +1,6 @@
 ### Example: sampling.pgls
 ### Required packages:
 library(caper);library(phylolm);library(phytools)
-library(ggplot2)
 
 ### Before: copy and run functions: sampling.pgls(); influential.pgls() and plot.power.pgls()
 
@@ -16,7 +15,7 @@ x <- y + rnorm(N,mean(y),1)
 
 ### Including Species names
 sp <- tree$tip.label               
-regre <- data.frame(sp,y,x,c)   
+regre <- data.frame(sp,y,x)   
 
 ### Organizing comparative data for pgls:
 c.data <- comparative.data(data=regre,phy=tree,vcv=T,vcv.dim=3,names.col="sp")
