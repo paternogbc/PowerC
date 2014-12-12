@@ -25,13 +25,13 @@ mod0 <- pgls(y ~x, data=c.data,"ML")
 summary(mod0)
 
 ### Example: sampling.pgls
-samp1 <- sampling.pgls(y~x,data=regre,phy=tree,times=10,breaks=seq(.1,.9,.1),lambda="ML",names.col="sp")
+samp1 <- sampling.pgls(y~x,data=regre,phy=tree,names.col="sp")
 
 ### You can specify the number of replicates per break interval:
 samp2 <- sampling.pgls(y~x,data=regre,phy=tree,times=50,breaks=c(.1,.5,.9),lambda="ML",names.col="sp")
 
 ### Example: influence.pgls
-influ1 <- influence.pgls(y ~ x,data=regre,phy=tree,lambda="ML")
+influ1 <- influence.pgls(y ~ x,data=regre,phy=tree)
 ### Estimates values:
 influ1$estimates
 ### Most influential species:

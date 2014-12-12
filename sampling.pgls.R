@@ -71,8 +71,18 @@ sampling.pgls <- function(formula,data,phy,times=20,breaks=c(.1,.3,.5,.7,.9),lam
           
           # Data frame with results:
           estimates <- data.frame(intercepts,betas,p.values,n.removs,n.percents)
+          
+          ## Power Analysis:
+          times <- table(estimates$n.removs)[1]
+          breaks <- unique(estimates$n.percents)
+          simu.sig <- estimates$p.values > .05
+          estimates$simu.sig <- simu.sig
+          power <- 1-(with(estimates,tapply(simu.sig,n.removs,sum)))/times
+          power.tab <- data.frame(percent_sp_removed=breaks,power)
+          estimates <- estimates[,-ncol(estimates)]
+          
           param0 <- data.frame(beta.0,intercept.0)
           beta_IC <- data.frame(beta.low=beta.0.low,beta.up=beta.0.up)
-          return(list(original_model_estimates=param0,beta_IC=beta_IC,results=estimates))
+          return(list(original_model_estimates=param0,original_beta_95_IC=beta_IC,results=estimates,power_analysis=power.tab))
 }
 
