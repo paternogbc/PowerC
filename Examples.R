@@ -13,7 +13,7 @@ y <- rTrait(n=1, tree, model=c("lambda"),parameters=list(lambda=.8))
 ### Simulating explanatory variable
 x <- y + rnorm(N,mean(y),1)     
 
-### Including Species names
+### Including Species names:
 sp <- tree$tip.label               
 regre <- data.frame(sp,y,x)   
 
