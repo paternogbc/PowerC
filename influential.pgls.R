@@ -4,7 +4,7 @@
 ## Data created: 26.11.14
 
 ## This code is not totally checked, please be aware!
-
+##
 ## Load required packages:
 library(caper)
 library(ggplot2)
