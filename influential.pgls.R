@@ -10,27 +10,27 @@ library(caper)
 library(ggplot2)
 library(gridExtra)
 
-influence.pgls <- function(formula,data,phy,lambda="ML",names.col)
+influence.pgls <- function(formula,data,lambda="ML")
 {
           ### Basic error checking:
           if(class(formula)!="formula") stop("Please formula must be class 'forumla'")
-          if(class(phy)!="phylo") stop("phy object must be of class 'phylo'")
-          if(class(data)!="data.frame") stop("data data must be of class 'data.frame'")
+          if(class(data)!="comparative.data") stop("data object must be of class 'comparative.data. See
+                                                   ?comparative.data, package (caper) for details")
           else
                     
-                    # FULL MODEL calculations:
-                    c.data <- comparative.data(phy=phy,data=data,names.col=sp,vcv=T,vcv.dim=3)
+          # FULL MODEL calculations:
+          c.data <- data
           N <- nrow(c.data$data)             # Sample size
           mod.0 <- pgls(formula, data=c.data,lambda=lambda)
           sumMod <- summary(mod.0)
-          intercept.0 <-    sumMod[[c(5,1)]] # Intercept (full model)
-          beta.0 <-    sumMod[[c(5,2)]]      # Beta (full model)
-          pval.0 <-    sumMod[[c(5,8)]]      # p.value (full model)
-          sd.beta.0 <- sumMod[[c(5,4)]]      # Standart Error (full model)
-          df.0 <- sumMod[[2]][2] # Degree if Freedon (full model))
+          intercept.0 <-    sumMod[[c(5,1)]]  # Intercept (full model)
+          beta.0 <-    sumMod[[c(5,2)]]       # Beta (full model)
+          pval.0 <-    sumMod[[c(5,8)]]       # p.value (full model)
+          sd.beta.0 <- sumMod[[c(5,4)]]       # Standart Error (full model)
+          df.0 <- sumMod[[2]][2]              # Degree if Freedon (full model))
           beta.IC <- qt(0.975,df.0)*sd.beta.0 # Beta CI (full model)
-          beta.0.low <- beta.0 - beta.IC  # Low limit of beta CI (full model)
-          beta.0.up <- beta.0 + beta.IC   # Up limit of beta CI (full model)
+          beta.0.low <- beta.0 - beta.IC      # Low limit of beta CI (full model)
+          beta.0.up <- beta.0 + beta.IC       # Up limit of beta CI (full model)
           
           # Sampling effort analysis:
           betas <- as.numeric()
@@ -42,7 +42,8 @@ influence.pgls <- function(formula,data,phy,lambda="ML",names.col)
           
           # Loop:
           for (i in 1:nrow(c.data$data)){
-                    crop.data <- comparative.data(phy=phy,data=data[-i,],names.col=sp,vcv=T,vcv.dim=3)
+                    exclude <- c(1:nrow(c.data$data))[-i]
+                    crop.data <- c.data[exclude,]
                     mod <- try(pgls(formula, data=crop.data,lambda),TRUE)
                     if(isTRUE(class(mod)=="try-error")) 
                     {
@@ -59,7 +60,7 @@ influence.pgls <- function(formula,data,phy,lambda="ML",names.col)
                               pval <-    sum.Mod[[c(5,8)]] # p.value
                               DFbeta <- beta - beta.0
                               DFint  <- intercept - intercept.0
-                              sp <- phy$tip.label[i]
+                              sp <- c.data$phy$tip.label[i]
                               ### Storing values for each simulation
                               betas <- c(betas,beta)
                               intercepts <- c(intercepts,intercept)
@@ -75,7 +76,7 @@ influence.pgls <- function(formula,data,phy,lambda="ML",names.col)
           influ.sp.b <- as.character(estimates[order(estimates$DFbetas,decreasing=T)[1:5],]$species)
           influ.sp.i <- as.character(estimates[order(estimates$DFintercepts,decreasing=T)[1:5],]$species)
           beta_IC <- data.frame(beta.low=beta.0.low,beta.up=beta.0.up)
-          return(list(formula=formula,original_model_estimates=param0,original_beta_95_IC=beta_IC,most_influential_species=rbind(beta=influ.sp.b,intercept=influ.sp.i),results=estimates,data=data))
+          return(list(formula=formula,original_model_estimates=param0,original_beta_95_IC=beta_IC,most_influential_species=rbind(beta=influ.sp.b,intercept=influ.sp.i),results=estimates,data=c.data$data))
           
 }
 

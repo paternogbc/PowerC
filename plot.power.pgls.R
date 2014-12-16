@@ -11,7 +11,7 @@ library(gridExtra)
 ### Start:
 plot.power.pgls <- function(x, method="sampling"){
           if (method == "sampling"){
-                    result <- x$results
+                    result <- x[[3]]
                     beta.0 <- as.numeric(x[[1]][1])
                     beta.0.low <- as.numeric(x[[2]][1])
                     beta.0.up <- as.numeric(x[[2]][2])
@@ -36,15 +36,15 @@ plot.power.pgls <- function(x, method="sampling"){
                     ## Mean estimated Betas:
                     med <- with(result,tapply(betas,n.removs,mean))
                     Sdev <- with(result,tapply(betas,n.removs,sd))
-                    n.sp <- nrow(c.data$data)-as.numeric(rownames(med))
+                    n.sp <- nrow(x[[5]]$data)-as.numeric(rownames(med))
                     result.med <- data.frame(med,Sdev,n.sp,beta.0)
                     p3 <- ggplot(result.med,aes(y=med,x=n.sp),environment=.e)+
                               geom_point(size=3,alpha=.7)+
-                              scale_x_continuous(breaks=c(n.sp,nrow(c.data$data)))+
+                              scale_x_continuous(breaks=c(n.sp,nrow(x[[5]]$data)))+
                               geom_errorbar(aes(ymin=med-Sdev, ymax=med+Sdev), width=.1)+
                               geom_hline(yintercept= beta.0,linetype=2,color="red")+
                               xlab("Number of Species") + ylab("Mean Estimated Betas (+-SD)")+
-                              geom_point(aes(x=nrow(c.data$data),y=beta.0,size=3,colour="red"))+
+                              geom_point(aes(x=nrow(x[[5]]$data),y=beta.0,size=3,colour="red"))+
                               theme(legend.position="none")
                     
                     ## Power Analysis:
@@ -62,9 +62,10 @@ plot.power.pgls <- function(x, method="sampling"){
                               geom_line(colour="red")
                     grid.arrange(p1,p2,p3,p4,ncol=2,nrow=2)
           }
-          if (method == "influential"){
+          if (method == "influence"){
                     .e <- environment()
-                    result <- x$results
+                    result <- x[[5]]
+                    vars <- all.vars(x[[1]])
                     intercept.0 <-  as.numeric(x[[2]][1])
                     beta.0 <-  as.numeric(x[[2]][2])
                     p1 <- ggplot(result,aes(x=betas,y=..density..),environment=.e)+
@@ -78,22 +79,29 @@ plot.power.pgls <- function(x, method="sampling"){
                               geom_vline(xintercept = intercept.0,color="red",linetype=2,size=.7)+
                               xlab("Estimated Intercepts")
                               
-                    
-                    result.tab <- data.frame(result,x$data[all.vars(x$formula)])
-                    p3<-ggplot(result.tab,aes(y=y,x=x,colour=abs(DFbetas)))+
+                    result.tab <- data.frame(x$results,x$data[vars])
+                    p3<-ggplot(result.tab,aes(y=get(vars[1]),
+                                              x=get(vars[2]),
+                                              colour=abs(DFbetas)),environment=.e,)+
                               geom_point(size=3)+
-                              scale_colour_gradient( low="black", high="red", space="Lab",name="DF Betas")+
+                              scale_colour_gradient( low="black", high="red",name="DF Betas")+
                               theme(legend.key.width = unit(.2,"cm"),
                                         panel.background=element_rect(fill="white",colour="black"),
                                         panel.grid.major = element_blank(),
-                                        panel.grid.minor = element_blank())
-                    p4<-ggplot(result.tab,aes(y=y,x=x,colour=abs(DFintercepts)))+
+                                        panel.grid.minor = element_blank())+
+                                        ylab(vars[1])+
+                                        xlab(vars[2])
+                    p4<-ggplot(result.tab,aes(y=get(vars[1]),
+                                              x=get(vars[2]),
+                                              colour=abs(DFintercepts)),environment=.e,)+
                               geom_point(size=3)+
-                              scale_colour_gradient( low="black", high="red", space="Lab",name="DF Intercepts")  +        
+                              scale_colour_gradient( low="black", high="red",name="DF Intercepts")  +        
                               theme(legend.key.width = unit(.2,"cm"),
                                         panel.background=element_rect(fill="white",colour="black"),
                                         panel.grid.major = element_blank(),
-                                        panel.grid.minor = element_blank())
+                                        panel.grid.minor = element_blank())+
+                                        ylab(all.vars(x$formula)[1])+
+                                        xlab(all.vars(x$formula)[2])
                     grid.arrange(p1,p2,p3,p4,nrow=2,ncol=2)
           }
                     
