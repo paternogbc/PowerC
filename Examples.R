@@ -5,7 +5,7 @@ library(caper);library(phylolm);library(phytools)
 ### Before: copy and run functions: sampling.pgls(); influential.pgls() and plot.power.pgls()
 
 set.seed(111)
-N <- 200 # Number of species
+N <- 100 # Number of species
 ### Simulating tree
 tree<-pbtree(n=N)    
 plot(tree)

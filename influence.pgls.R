@@ -41,19 +41,16 @@ influence.pgls <- function(formula,data,lambda="ML")
           species <- as.character()
           
           # Loop:
+         
           for (i in 1:nrow(c.data$data)){
                     exclude <- c(1:nrow(c.data$data))[-i]
                     crop.data <- c.data[exclude,]
-                    mod <- try(pgls(formula, data=crop.data,lambda="ML"),TRUE)
-                    if (isTRUE(class(mod)=="try-error"))
-                    {
-                             
-                              while(class(mod)=="try-error"){
-                                        mod <- pgls(formula, data=crop.data,lambda="ML")
-                              }
-                    }
-                    else{
-                              
+                    mod <-1
+                    class(mod)<-"try-error"
+                    system.time(while(class(mod)=="try-error"){
+                              mod <- try(pgls(formula, data=crop.data,lambda=lambda),TRUE)
+                              })
+                   
                               ### Calculating model estimates:
                               sum.Mod <- summary(mod)
                               beta <-    sum.Mod[[c(5,2)]]     # Beta
@@ -69,7 +66,7 @@ influence.pgls <- function(formula,data,lambda="ML")
                               DFintercepts <- c(DFintercepts,DFint)
                               species <- c(species,sp)
                               p.values <- c( p.values,pval)
-                    }
+                    
           }
           # Dataframe with results:
           estimates <- data.frame(species,betas,DFbetas,intercepts,DFintercepts,p.values) 
