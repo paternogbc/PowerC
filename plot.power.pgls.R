@@ -69,13 +69,13 @@ plot.power.pgls <- function(x, method="sampling"){
                     intercept.0 <-  as.numeric(x[[2]][1])
                     beta.0 <-  as.numeric(x[[2]][2])
                     p1 <- ggplot(result,aes(x=betas,y=..density..),environment=.e)+
-                              geom_histogram(fill="tomato", alpha=.7,colour="grey60", size=.2) +
-                              geom_density() +
+                              geom_histogram(fill="lightyellow", alpha=.9,colour="grey60", size=.2) +
+                              geom_density(size=.2) +
                               geom_vline(xintercept = beta.0,color="red",linetype=2,size=.7)+
                               xlab("Estimated Betas")
                     p2 <- ggplot(result,aes(x=intercepts,y=..density..),environment=.e)+
-                              geom_histogram(fill="tomato", alpha=.7,colour="grey60", size=.2) +
-                              geom_density() +
+                              geom_histogram(fill="lightyellow", alpha=.9,colour="grey60", size=.2) +
+                              geom_density(size=.2) +
                               geom_vline(xintercept = intercept.0,color="red",linetype=2,size=.7)+
                               xlab("Estimated Intercepts")
                               
