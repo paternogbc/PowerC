@@ -1,111 +1,87 @@
-## plot.power.pgls: Plot influential and sampling effort analysis for pgls
+## sampling.pgls: Analysis of sampling effort for PGLS linear regression
 ## Author: Gustavo Paterno (paternogbc@gmail.com)
-## Version: 0.2
-## Date created: 10.10.14
+## Date created: 10.12.14
 
 ## This code is not totally checked, please be aware!
 
-library(ggplot2)
-library(gridExtra)
+## Load required packages:
+library(caper)
 
-### Start:
-plot.power.pgls <- function(x, method="sampling"){
-          if (method == "sampling"){
-                    result <- x[[3]]
-                    beta.0 <- as.numeric(x[[1]][1])
-                    beta.0.low <- as.numeric(x[[2]][1])
-                    beta.0.up <- as.numeric(x[[2]][2])
-                    .e <- environment()
-                    p1 <- ggplot(result,aes(x=betas),environment=.e)+
-                              geom_density(size=.5, fill="tomato",alpha=.5)+
-                              xlab("Betas")+
-                              geom_vline(xintercept=beta.0.low,linetype=2,color="red")+
-                              geom_vline(xintercept=beta.0.up,linetype=2,color="red")+
-                              geom_vline(xintercept = beta.0,color="red",linetype=2,size=2)                    
+sampling.pgls <- function(formula,data,times=20,breaks=seq(.1,.7,.1),lambda="ML")
+{
+          ### Basic error checking:
+          if(class(formula)!="formula") stop("Please formula must be class 'forumla'")
+          if(class(data)!="comparative.data") stop("data data must be of class 'comparative.data'. See function `comparative.data`.")
+          if(length(breaks)<2) stop("please include more then one break (eg. breaks=c(.3,.5)") 
+          else
                     
-                    ## Graphs: Estimated betas ~ % species removed
-                    p2 <- ggplot(result,aes(y=betas,x=n.percents))+
-                              geom_point(size=3,alpha=.7)+
-                              scale_x_continuous(breaks=result$n.percents)+          
-                              ylab("Estimated Betas")+
-                              xlab("% of Species Removed ")+
-                              geom_hline(yintercept=beta.0.low,linetype=2,color="red")+
-                              geom_hline(yintercept=beta.0.up,linetype=2,color="red")+
-                              geom_hline(yintercept=beta.0,linetype=2,color="red",size=1.1)
-                    
-                    ## Mean estimated Betas:
-                    med <- with(result,tapply(betas,n.removs,mean))
-                    Sdev <- with(result,tapply(betas,n.removs,sd))
-                    n.sp <- nrow(x[[5]]$data)-as.numeric(rownames(med))
-                    result.med <- data.frame(med,Sdev,n.sp,beta.0)
-                    p3 <- ggplot(result.med,aes(y=med,x=n.sp),environment=.e)+
-                              geom_point(size=3,alpha=.7)+
-                              scale_x_continuous(breaks=c(n.sp,nrow(x[[5]]$data)))+
-                              geom_errorbar(aes(ymin=med-Sdev, ymax=med+Sdev), width=.1)+
-                              geom_hline(yintercept= beta.0,linetype=2,color="red")+
-                              xlab("Number of Species") + ylab("Mean Estimated Betas (+-SD)")+
-                              geom_point(aes(x=nrow(x[[5]]$data),y=beta.0,size=3,colour="red"))+
-                              theme(legend.position="none")
-                    
-                    ## Power Analysis:
-                    times <- table(result$n.removs)[1]
-                    breaks <- unique(result$n.percents)
-                    simu.sig <- result$p.values > .05
-                    result$simu.sig <- simu.sig
-                    power <- 1-(with(result,tapply(simu.sig,n.removs,sum)))/times
-                    power.tab <- data.frame(breaks,power)
-                    p4 <-ggplot(power.tab,aes(y=power,x=breaks))+
-                              scale_y_continuous(limits=c(0,1))+ 
-                              scale_x_continuous(breaks=breaks)+          
-                              xlab("% Species removed")+
-                              geom_point(size=5,colour="red")+
-                              geom_line(colour="red")
-                    grid.arrange(p1,p2,p3,p4,ncol=2,nrow=2)
-          }
-          if (method == "influence"){
-                    .e <- environment()
-                    result <- x[[5]]
-                    vars <- all.vars(x[[1]])
-                    intercept.0 <-  as.numeric(x[[2]][1])
-                    beta.0 <-  as.numeric(x[[2]][2])
-                    p1 <- ggplot(result,aes(x=betas,y=..density..),environment=.e)+
-                              geom_histogram(fill="tomato", alpha=.7,colour="grey60", size=.2) +
-                              geom_density() +
-                              geom_vline(xintercept = beta.0,color="red",linetype=2,size=.7)+
-                              xlab("Estimated Betas")
-                    p2 <- ggplot(result,aes(x=intercepts,y=..density..),environment=.e)+
-                              geom_histogram(fill="tomato", alpha=.7,colour="grey60", size=.2) +
-                              geom_density() +
-                              geom_vline(xintercept = intercept.0,color="red",linetype=2,size=.7)+
-                              xlab("Estimated Intercepts")
+          # FULL MODEL calculations:
+          c.data <- data
+          N <- nrow(c.data$data)             # Sample size
+          mod.0 <- pgls(formula, data=c.data,lambda=lambda)
+          sumMod <- summary(mod.0)
+          intercept.0 <-    sumMod[[c(5,1)]] # Intercept (full model)
+          beta.0 <-    sumMod[[c(5,2)]]      # Beta (full model)
+          pval.0 <-    sumMod[[c(5,8)]]      # p.value (full model)
+          sd.beta.0 <- sumMod[[c(5,4)]]      # Standart Error (full model)
+          df.0 <- sumMod[[2]][2] # Degree if Freedon (full model))
+          beta.IC <- qt(0.975,df.0)*sd.beta.0 # Beta CI (full model)
+          beta.0.low <- beta.0 - beta.IC  # Low limit of beta CI (full model)
+          beta.0.up <- beta.0 + beta.IC   # Up limit of beta CI (full model)
+          
+          # Sampling effort analysis: 
+          intercepts <- as.numeric()
+          betas <- as.numeric()
+          p.values <- as.numeric()
+          n.removs <- as.numeric()
+          n.percents <- as.numeric()
+          
+          # Loop:
+          limit <- sort(round((breaks)*nrow(c.data$data),digits=0))
+          for (i in limit){
+                    for (j in 1:times){ 
+                              exclude <- sample(1:N,i)
+                              crop.data <- c.data[-exclude,]
+                              mod=try(pgls(formula, data=crop.data,lambda),TRUE)
+                              if(isTRUE(class(mod)=="try-error")) { next } 
+                              else { 
+                                        ### Calculating model estimates:
+                                        sum.Mod <- summary(mod)
+                                        beta <-    sum.Mod[[c(5,2)]]     # Beta
+                                        intercept <-    sum.Mod[[c(5,1)]]# Intercept
+                                        pval <-    sum.Mod[[c(5,8)]] # p.value
+                                        n.remov <- i
+                                        n.percent <- n.remov/N
+                                        rep <- j
+                                        
+                                        ### Storing values for each simulation
+                                        intercepts <- c(intercepts,intercept)
+                                        betas <- c(betas,beta)
+                                        p.values <- c( p.values,pval)
+                                        n.removs <- c(n.removs,n.remov)
+                                        n.percents <- c(n.percents,n.percent)
+                              } 
                               
-                    result.tab <- data.frame(x$results,x$data[vars])
-                    p3<-ggplot(result.tab,aes(y=get(vars[1]),
-                                              x=get(vars[2]),
-                                              colour=abs(DFbetas)),environment=.e,)+
-                              geom_point(size=3)+
-                              scale_colour_gradient( low="black", high="red",name="DF Betas")+
-                              theme(legend.key.width = unit(.2,"cm"),
-                                        panel.background=element_rect(fill="white",colour="black"),
-                                        panel.grid.major = element_blank(),
-                                        panel.grid.minor = element_blank())+
-                                        ylab(vars[1])+
-                                        xlab(vars[2])
-                    p4<-ggplot(result.tab,aes(y=get(vars[1]),
-                                              x=get(vars[2]),
-                                              colour=abs(DFintercepts)),environment=.e,)+
-                              geom_point(size=3)+
-                              scale_colour_gradient( low="black", high="red",name="DF Intercepts")  +        
-                              theme(legend.key.width = unit(.2,"cm"),
-                                        panel.background=element_rect(fill="white",colour="black"),
-                                        panel.grid.major = element_blank(),
-                                        panel.grid.minor = element_blank())+
-                                        ylab(all.vars(x$formula)[1])+
-                                        xlab(all.vars(x$formula)[2])
-                    grid.arrange(p1,p2,p3,p4,nrow=2,ncol=2)
+                              
+                    }
           }
-                    
-                    
+          
+          
+          # Data frame with results:
+          estimates <- data.frame(intercepts,betas,p.values,n.removs,n.percents)
+          
+          ## Power Analysis:
+          times <- table(estimates$n.removs)[1]
+          breaks <- unique(estimates$n.percents)
+          simu.sig <- estimates$p.values > .05
+          estimates$simu.sig <- simu.sig
+          power <- 1-(with(estimates,tapply(simu.sig,n.removs,sum)))/times
+          power.tab <- data.frame(percent_sp_removed=breaks,power)
+          estimates <- estimates[,-ncol(estimates)]
+          
+          param0 <- data.frame(beta.0,intercept.0)
+          beta_IC <- data.frame(beta.low=beta.0.low,beta.up=beta.0.up)
+          return(list(original_model_estimates=param0,original_beta_95_IC=beta_IC,results=estimates,power_analysis=power.tab,data=c.data))
+          
           
 }
-          
