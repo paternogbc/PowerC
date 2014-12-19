@@ -44,12 +44,13 @@ influence.pgls <- function(formula,data,lambda="ML")
           for (i in 1:nrow(c.data$data)){
                     exclude <- c(1:nrow(c.data$data))[-i]
                     crop.data <- c.data[exclude,]
-                    mod <- try(pgls(formula, data=crop.data,lambda),TRUE)
-                    if(isTRUE(class(mod)=="try-error")) 
+                    mod <- try(pgls(formula, data=crop.data,lambda="ML"),TRUE)
+                    if (isTRUE(class(mod)=="try-error"))
                     {
-                              while(isTRUE(class(mod)=="try-error"))
-                                        mod <- try(pgls(formula, data=crop.data,lambda),TRUE)
-                              
+                             
+                              while(class(mod)=="try-error"){
+                                        mod <- pgls(formula, data=crop.data,lambda="ML")
+                              }
                     }
                     else{
                               

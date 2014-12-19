@@ -83,7 +83,7 @@ plot.power.pgls <- function(x, method="sampling"){
                     p3<-ggplot(result.tab,aes(y=get(vars[1]),
                                               x=get(vars[2]),
                                               colour=abs(DFbetas)),environment=.e,)+
-                              geom_point(size=3)+
+                              geom_point(size=3,alpha=.8)+
                               scale_colour_gradient( low="black", high="red",name="DF Betas")+
                               theme(legend.key.width = unit(.2,"cm"),
                                         panel.background=element_rect(fill="white",colour="black"),
@@ -94,7 +94,7 @@ plot.power.pgls <- function(x, method="sampling"){
                     p4<-ggplot(result.tab,aes(y=get(vars[1]),
                                               x=get(vars[2]),
                                               colour=abs(DFintercepts)),environment=.e,)+
-                              geom_point(size=3)+
+                              geom_point(size=3,alpha=.8)+
                               scale_colour_gradient( low="black", high="red",name="DF Intercepts")  +        
                               theme(legend.key.width = unit(.2,"cm"),
                                         panel.background=element_rect(fill="white",colour="black"),
