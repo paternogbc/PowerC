@@ -24,10 +24,10 @@ comp.data <- comparative.data(data=regre,phy=tree,vcv=T,vcv.dim=3,names.col="sp"
 ### Linear regression (PGLS):
 mod0 <- pgls(Ly ~Lx, data=comp.data,"ML")
 summary(mod0)
-class(comp.data)
+
 ### Example: sampling.pgls
 samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=50)
-names(samp1)
+
 ### You can specify the number of replicates per break interval:
 samp2 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=100,breaks=c(.1,.5,.9))
 
