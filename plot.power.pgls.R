@@ -64,10 +64,10 @@ plot.power.pgls <- function(x, method="sampling"){
           }
           if (method == "influence"){
                     .e <- environment()
-                    result <- x[[5]]
-                    vars <- all.vars(x[[1]])
-                    intercept.0 <-  as.numeric(x[[2]][1])
-                    beta.0 <-  as.numeric(x[[2]][2])
+                    result <- x[[6]]
+                    vars <- all.vars(x[[2]])
+                    intercept.0 <-  as.numeric(x[[3]][1])
+                    beta.0 <-  as.numeric(x[[3]][2])
                     p1 <- ggplot(result,aes(x=betas,y=..density..),environment=.e)+
                               geom_histogram(fill="lightyellow", alpha=.9,colour="grey60", size=.2) +
                               geom_density(size=.2) +
@@ -78,34 +78,39 @@ plot.power.pgls <- function(x, method="sampling"){
                               geom_density(size=.2) +
                               geom_vline(xintercept = intercept.0,color="red",linetype=2,size=.7)+
                               xlab("Estimated Intercepts")
-                              
+                    if (isTRUE(class(x[[1]]) != "character" )){
+                              x$data <- x$data[-as.numeric(x[[1]]),]     
+                    }
                     result.tab <- data.frame(x$results,x$data[vars])
                     p3<-ggplot(result.tab,aes(y=get(vars[1]),
                                               x=get(vars[2]),
-                                              colour=abs(DFbetas)),environment=.e,)+
+                                              colour=DFbetas),environment=.e,)+
                               geom_point(size=3,alpha=.8)+
-                              scale_colour_gradient( low="black", high="red",name="DF Betas")+
+                              scale_colour_gradient2( low="blue",midpoint=0, mid="black",high="red",name="")+
                               theme(legend.key.width = unit(.2,"cm"),
-                                        panel.background=element_rect(fill="white",colour="black"),
-                                        panel.grid.major = element_blank(),
-                                        panel.grid.minor = element_blank())+
-                                        ylab(vars[1])+
-                                        xlab(vars[2])
+                                    panel.background=element_rect(fill="white",colour="black"),
+                                    panel.grid.major = element_blank(),
+                                    panel.grid.minor = element_blank())+
+                              ylab(vars[1])+
+                              xlab(vars[2])+
+                              ggtitle("Change in Beta estimate")
                     p4<-ggplot(result.tab,aes(y=get(vars[1]),
                                               x=get(vars[2]),
-                                              colour=abs(DFintercepts)),environment=.e,)+
+                                              colour=DFintercepts),environment=.e,)+
                               geom_point(size=3,alpha=.8)+
-                              scale_colour_gradient( low="black", high="red",name="DF Intercepts")  +        
+                              scale_colour_gradient2( low="blue",midpoint=0,mid="black", high="red",name="")  +        
                               theme(legend.key.width = unit(.2,"cm"),
-                                        panel.background=element_rect(fill="white",colour="black"),
-                                        panel.grid.major = element_blank(),
-                                        panel.grid.minor = element_blank())+
-                                        ylab(all.vars(x$formula)[1])+
-                                        xlab(all.vars(x$formula)[2])
-                    grid.arrange(p1,p2,p3,p4,nrow=2,ncol=2)
+                                    panel.background=element_rect(fill="white",colour="black"),
+                                    panel.grid.major = element_blank(),
+                                    panel.grid.minor = element_blank())+
+                              ylab(all.vars(x$formula)[1])+
+                              xlab(all.vars(x$formula)[2])+
+                              ggtitle("Change in Intercept estimate")
+                    
+                    suppressWarnings(grid.arrange(p1,p2,p3,p4,nrow=2,ncol=2))
           }
-                    
-                    
+          
+          
           
 }
-          
+

@@ -18,8 +18,8 @@ influence.pgls <- function(formula,data,lambda="ML")
                                                    ?comparative.data, package (caper) for details")
           else
                     
-          # FULL MODEL calculations:
-          c.data <- data
+                    # FULL MODEL calculations:
+                    c.data <- data
           N <- nrow(c.data$data)             # Sample size
           mod.0 <- pgls(formula, data=c.data,lambda=lambda)
           sumMod <- summary(mod.0)
@@ -39,23 +39,26 @@ influence.pgls <- function(formula,data,lambda="ML")
           DFintercepts <- as.numeric()
           p.values <- as.numeric()
           species <- as.character()
-          
+          errors <- as.numeric()
           # Loop:
-         
+          
           for (i in 1:nrow(c.data$data)){
                     exclude <- c(1:nrow(c.data$data))[-i]
                     crop.data <- c.data[exclude,]
-                    mod <-1
-                    class(mod)<-"try-error"
-                    system.time(while(class(mod)=="try-error"){
-                              mod <- try(pgls(formula, data=crop.data,lambda=lambda),TRUE)
-                              })
-                   
+                    
+                    mod=try(pgls(formula, data=crop.data,lambda),TRUE)
+                    if(isTRUE(class(mod)=="try-error")) { 
+                              error <- i
+                              names(error) <- rownames(c.data$data)[i]
+                              errors <- c(errors,error)
+                              next } 
+                    
+                    else {
                               ### Calculating model estimates:
                               sum.Mod <- summary(mod)
-                              beta <-    sum.Mod[[c(5,2)]]     # Beta
-                              intercept <-    sum.Mod[[c(5,1)]]# Intercept
-                              pval <-    sum.Mod[[c(5,8)]] # p.value
+                              beta <-    sum.Mod[[c(5,2)]]      # Beta
+                              intercept <-    sum.Mod[[c(5,1)]] # Intercept
+                              pval <-    sum.Mod[[c(5,8)]]      # p.value
                               DFbeta <- beta - beta.0
                               DFint  <- intercept - intercept.0
                               sp <- c.data$phy$tip.label[i]
@@ -66,7 +69,8 @@ influence.pgls <- function(formula,data,lambda="ML")
                               DFintercepts <- c(DFintercepts,DFint)
                               species <- c(species,sp)
                               p.values <- c( p.values,pval)
-                    
+                              print(i)
+                    }         
           }
           # Dataframe with results:
           estimates <- data.frame(species,betas,DFbetas,intercepts,DFintercepts,p.values) 
@@ -74,7 +78,19 @@ influence.pgls <- function(formula,data,lambda="ML")
           influ.sp.b <- as.character(estimates[order(estimates$DFbetas,decreasing=T)[1:5],]$species)
           influ.sp.i <- as.character(estimates[order(estimates$DFintercepts,decreasing=T)[1:5],]$species)
           beta_IC <- data.frame(beta.low=beta.0.low,beta.up=beta.0.up)
-          return(list(formula=formula,original_model_estimates=param0,original_beta_95_IC=beta_IC,most_influential_species=rbind(beta=influ.sp.b,intercept=influ.sp.i),results=estimates,data=c.data$data))
+          output <- list(errors=errors,formula=formula,
+                         original_model_estimates=param0,
+                         original_beta_95_IC=beta_IC,
+                         most_influential_species=rbind(beta=influ.sp.b,
+                                                        intercept=influ.sp.i),
+                         results=estimates,data=c.data$data)
+          if (length(output$errors) >0){ print("Some species deletion presented errors, 
+                                        please check: output$errors to see which species deletion showed error")}         
+          else {
+                    print("No erros found. All single deletions were performed and stored successfully")
+                    output$errors <- c("No erros found")}
+          
+          return(output)
           
 }
 

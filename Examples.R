@@ -4,15 +4,14 @@ library(caper);library(phylolm);library(phytools)
 
 ### Before: copy and run functions: sampling.pgls(); influential.pgls() and plot.power.pgls()
 
-set.seed(111)
-N <- 100 # Number of species
+N <- 50 # Number of species
 ### Simulating tree
 tree<-pbtree(n=N)    
 plot(tree)
 ### Simulating response variable with phylogenetic signal
 Ly <- rTrait(n=1, tree, model=c("lambda"),parameters=list(lambda=.8))  
 ### Simulating explanatory variable
-Lx <- Ly + rnorm(N,mean(Ly),3)     
+Lx <- Ly + rnorm(N,mean(Ly),1)     
 
 ### Including Species names:
 sp <- tree$tip.label               
@@ -33,6 +32,7 @@ samp2 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=100,breaks=c(.1,.5,.9))
 
 ### Example: influence.pgls
 influ1 <- influence.pgls(Ly ~ Lx,data=comp.data)
+names(influ1)
 ### Estimated parameters:
 influ1$results
 ### Most influential species:
@@ -42,4 +42,7 @@ influ1[[4]]
 plot.power.pgls(samp1,method="sampling")
 plot.power.pgls(samp2,method="sampling")
 plot.power.pgls(influ1,method="influence")
+influ1$results$DFbeta > .72
+
+max(influ1$results$DFbetas)
 
