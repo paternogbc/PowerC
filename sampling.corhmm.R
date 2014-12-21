@@ -72,9 +72,9 @@ sampling.corhmm <- function(phylogeny,data,times=20,breaks=seq(.1,.7,.1),rate.ca
   mod.0 <- corHMM(phy = phylogeny,data = data,rate.cat = rate.cat,node.states = node.states,nstarts=nstarts)
   AICc.0 <-mod.0$AICc
   Solution.0 <-mod.0$solution
-  Solution.se.0 <-mod.0$solution
+  Solution.se.0 <-mod.0$solution.se
   Solution.vector.0 <-as.vector(mod.0$solution)
-  solution.se.vector.0 <-as.vector(mod.0$solution)
+  solution.se.vector.0 <-as.vector(mod.0$solution.se)
   
   # Sampling effort analysis: 
   AICc <- as.numeric()
@@ -97,7 +97,7 @@ sampling.corhmm <- function(phylogeny,data,times=20,breaks=seq(.1,.7,.1),rate.ca
         Solution <-mod$solution
         Solution.se <-mod$solution
         Solution.vector <-as.vector(mod$solution)
-        solution.se.vector <-as.vector(mod$solution)
+        solution.se.vector <-as.vector(mod$solution.se)
         
         ### Storing values for each simulation
         AICc <- c(AICc,AICc)
@@ -111,6 +111,7 @@ sampling.corhmm <- function(phylogeny,data,times=20,breaks=seq(.1,.7,.1),rate.ca
                 AICc,data.frame(Solution.vector),data.frame(Solution.se.vector)))
   #Much to do here still: Implement some actual analyses of these.
   #Implement the option to save the actual models
+  #AICc is actually not that interesting! Of course, it changes with changes in data point number
 }
 
 #Try and run it
