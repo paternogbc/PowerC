@@ -43,7 +43,6 @@ as.vector(mod0_hrm2$solution)
 mod0_hrm2$solution.se
 as.vector(mod0_hrm2$solution.se)
 
-
 ########The sampling function (based on Gustavo's sampling.pgls + on my own previously written code to similar things in corHMM)
 
 #What do we wish the function to do? 
@@ -55,6 +54,10 @@ as.vector(mod0_hrm2$solution.se)
 #Ideally: compare different rate classes
 #Check histo's I made orginally for mk2 models
 #Check potential for printing phylo's?
+#Try function for diversitree oid?
+#Much to do here still: Implement some actual analyses of these.
+-  #Implement the option to save the actual models
+  -  #AICc is actually not that interesting! Of course, it changes with changes in data point number
 
 #Try to write a sampling.corHMM, comparable to what Gustavo did. 
 sampling.corhmm <- function(phylogeny,data,times=20,breaks=seq(.1,.7,.1),rate.cat=1,node.states="marginal",nstarts=10)
@@ -93,27 +96,25 @@ sampling.corhmm <- function(phylogeny,data,times=20,breaks=seq(.1,.7,.1),rate.ca
       mod=try(corHMM(phy = small.phylogeny,data = crop.data,rate.cat = rate.cat,node.states = node.states,nstarts=nstarts),TRUE)
       if(isTRUE(class(mod)=="try-error")) { next } 
       else { 
-        AICc <-mod$AICc
-        Solution <-mod$solution
-        Solution.se <-mod$solution
-        Solution.vector <-as.vector(mod$solution)
-        solution.se.vector <-as.vector(mod$solution.se)
+        AICc_new <-mod$AICc
+        Solution_new <-mod$solution
+        Solution.se_new <-mod$solution
+        Solution.vector_new <-as.vector(mod$solution)
+        Solution.se.vector_new <-as.vector(mod$solution.se)
         
         ### Storing values for each simulation
-        AICc <- c(AICc,AICc)
-        Solution.vector <- rbind(Solution.vector,Solution.vector)
-        Solution.se.vector <- rbind(Solution.se.vector,Solution.se.vector)
+        AICc <- c(AICc,AICc_new)
+        Solution.vector <- rbind(Solution.vector,Solution.vector_new)
+        Solution.se.vector <- rbind(Solution.se.vector,Solution.se.vector_new)
               } 
             
     }
   }
-    return(list(AICc.0,Solution.0,Solution.se.0,Solution.vector.0,solution.se.vector.0,
-                AICc,data.frame(Solution.vector),data.frame(Solution.se.vector)))
-  #Much to do here still: Implement some actual analyses of these.
-  #Implement the option to save the actual models
-  #AICc is actually not that interesting! Of course, it changes with changes in data point number
-}
+    return(list(AICc_original=AICc.0,Transition_rates_original=Solution.0,SE_transition_rates_original=Solution.se.0,
+                AICc_estimates=AICc,Transition_rates_estimates=data.frame(Solution.vector),SE_transitions_rates_estimates=data.frame(Solution.se.vector)))
+ }
 
 #Try and run it
 corhmm_samp_try<-sampling.corhmm(phylogeny = tree,data = regre,times = 10,breaks = seq(.2,.8,.2),rate.cat = 1)
-corhmm_samp_try2<-sampling.corhmm(phylogeny = tree,data = regre,times = 10,breaks = seq(.2,.8,.2),rate.cat = 2)
+
+#corhmm_samp_try2<-sampling.corhmm(phylogeny = tree,data = regre,times = 3,breaks = seq(.2,.8,.2),rate.cat = 2)
