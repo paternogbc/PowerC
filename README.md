@@ -19,24 +19,26 @@ First copy and run these functions from the repository `PowerC`:
 
 **Required Packages:**
 ```{r}
-library(caper);library(phytools);library("phylolm")
+library(caper);library(phytools);library(phylolm)
 ```
 
 **Simulating data and phylogeny:**
 ```{r}
-set.seed(111)
-N <- 100 # Number of species
 ### Simulating tree
 tree<-pbtree(n=N)    
+plot(tree)
 ### Simulating response variable with phylogenetic signal
-y <- rTrait(n=1, tree, model=c("lambda"),parameters=list(lambda=.8))  
+Ly <- rTrait(n=1, tree, model=c("lambda"),parameters=list(lambda=.8))  
 ### Simulating explanatory variable
-x <- y + rnorm(N,mean(y),1)     
-### Including Species names
+Lx <- Ly + rnorm(N,mean(Ly),1)     
+
+### Including Species names:
 sp <- tree$tip.label               
-regre <- data.frame(sp,y,x)   
+regre <- data.frame(sp,Ly,Lx)   
+
 ### Organizing comparative data for pgls:
-c.data <- comparative.data(data=regre,phy=tree,vcv=T,vcv.dim=3,names.col="sp")
+comp.data <- comparative.data(data=regre,phy=tree,vcv=T,vcv.dim=3,names.col="sp")
+
 ```
 
 **Fitting regressions:**
@@ -54,16 +56,17 @@ abline(mod0,col="red",lwd=3)
 
 **Performing Sensitive Analysis:** `sampling.pgls`
 ```{r}
-samp1 <- sampling.pgls(y~x,data=regre,phy=tree,names.col="sp")
-### You can specify the number of replicates per break interval:
-samp2 <- sampling.pgls(y~x,data=regre,phy=tree,times=100,breaks=c(.1,.5,.9),names.col="sp")
+### Example: sampling.pgls
+samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=50)
+### You can specify the number of replicates and break intervals:
+samp2 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=100,breaks=c(.1,.5,.9))
 
 ```
 
 **Performing influential analysis:** `influential.pgls`
 ```{r}
 ### Example: influence.pgls
-influ1 <- influence.pgls(y ~ x,data=regre,phy=tree)
+influ1 <- influence.pgls(Ly ~ Lx,data=comp.data)
 ### Estimated parameters:
 influ1$results
 ### Most influential species:
@@ -74,7 +77,7 @@ influ1[[4]]
 ```{r,fig.show='hold'}
 plot.power.pgls(samp1,method="sampling")
 plot.power.pgls(samp2,method="sampling")
-plot.power.pgls(influ1,method="influential")
+plot.power.pgls(influ1,method="influence")
 ```
 
 

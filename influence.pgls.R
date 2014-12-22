@@ -2,7 +2,7 @@
 ## Author: Gustavo Paterno (paternogbc@gmail.com)
 ## Version: 0.2
 ## Data created: 26.11.14
-
+                                                          
 ## This code is not totally checked, please be aware!
 ##
 ## Load required packages:
@@ -13,13 +13,16 @@ library(gridExtra)
 influence.pgls <- function(formula,data,lambda="ML")
 {
           ### Basic error checking:
-          if(class(formula)!="formula") stop("Please formula must be class 'forumla'")
-          if(class(data)!="comparative.data") stop("data object must be of class 'comparative.data. See
-                                                   ?comparative.data, package (caper) for details")
+          if(class(formula)!="formula") stop("Please formula must be class
+                                             'forumla'")
+          if(class(data)!="comparative.data") stop("data object must be of class
+                                                  'comparative.data. See
+                                                   ?comparative.data, package 
+                                                   (caper) for details")
           else
                     
-                    # FULL MODEL calculations:
-                    c.data <- data
+          # FULL MODEL calculations:
+          c.data <- data
           N <- nrow(c.data$data)             # Sample size
           mod.0 <- pgls(formula, data=c.data,lambda=lambda)
           sumMod <- summary(mod.0)

@@ -27,7 +27,7 @@ summary(mod0)
 ### Example: sampling.pgls
 samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=50)
 
-### You can specify the number of replicates per break interval:
+### You can specify the number of replicates and break intervals:
 samp2 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=100,breaks=c(.1,.5,.9))
 
 ### Example: influence.pgls
