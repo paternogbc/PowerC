@@ -26,7 +26,6 @@ regre <- data.frame(sp,y)
 ####Some basic model running
 #Run the simplest model, with 1 rate class (i.e. reduces to mk2)
 system.time(mod0_hrm1 <- corHMM(phy = tree,data = regre,rate.cat = 1,node.states = "marginal",nstarts=10))
-#For most uses this is realistically going to require a cluster. Here, only 50 tips and 10 restarts (more appropriate usual ~100) and takes 20 seconds for simplest model
 #Other rate classes
 system.time(mod0_hrm2 <- corHMM(phy = tree,data = regre,rate.cat = 2,node.states = "marginal",nstarts=10))
 #Conceptually three and four are the same idea, but take very long. Consider later. 
@@ -46,21 +45,24 @@ as.vector(mod0_hrm2$solution.se)
 ########The sampling function (based on Gustavo's sampling.pgls + on my own previously written code to similar things in corHMM)
 
 #What do we wish the function to do? 
-#Within a rate class: give mean/median/se/range etc. for the AICc to check if that is somewhat stable.
-#Give an estimate of the stability of the trainsition rates, and ideally something like a histogram.
-#Implement an option so that people can save not only the key variables of the model, but also the actual models.
-    #I think this will be interesting to many people as they will often want to actually print the triat reocnstructions and need the actual models. Particular because computatoinally intense, may be wise to store. 
-#Problem: There is som many of them for high rate classes.
+#Implement: 
+    #Calculate mean/se/median of trans rates per break --> also (or only?) in visualising funciton
+    #Idem for AIC
+    #dplyr will be useful here. 
 #Ideally: compare different rate classes
-#Check histo's I made orginally for mk2 models
-#Check potential for printing phylo's?
-#Try function for diversitree oid?
-#Much to do here still: Implement some actual analyses of these.
--  #Implement the option to save the actual models
-  -  #AICc is actually not that interesting! Of course, it changes with changes in data point number
+  #For instance, iterate over different rate classes and see what happens?
+  #Try if this is possible (it should be, but time consuming)
 
+#For visualisation
+  #Check histo's I made orginally for mk2 models
+  #Check potential for printing phylo's? --> Write a seperate function to iterate over stored models and print the phylogenies. 
+
+#Implement an option for mk2 in diversitree as well. 
+  #Check other main packages for binary trait reconstruction (i.e. ape etc.).
+
+  
 #Try to write a sampling.corHMM, comparable to what Gustavo did. 
-sampling.corhmm <- function(phylogeny,data,times=20,breaks=seq(.1,.7,.1),rate.cat=1,node.states="marginal",nstarts=10)
+sampling.corhmm <- function(phylogeny,data,times=10,breaks=seq(.1,.9,.1),rate.cat=1,node.states="marginal",nstarts=10,save.models=F)
 {
   require(corHMM)
   require(ape)
@@ -77,14 +79,15 @@ sampling.corhmm <- function(phylogeny,data,times=20,breaks=seq(.1,.7,.1),rate.ca
   Solution.0 <-mod.0$solution
   Solution.se.0 <-mod.0$solution.se
   Solution.vector.0 <-as.vector(mod.0$solution)
-  solution.se.vector.0 <-as.vector(mod.0$solution.se)
+  Solution.se.vector.0 <-as.vector(mod.0$solution.se)
   
   # Sampling effort analysis: 
   AICc <- as.numeric()
-  Solution <- NULL
-  Solution.se <- NULL
   Solution.vector <-NULL
   Solution.se.vector <-NULL
+  n.removs <- as.numeric()
+  n.percents <- as.numeric()
+  mods<-list()
   
   # Loop:
   limit <- sort(round((breaks)*nrow(data),digits=0))
@@ -97,24 +100,34 @@ sampling.corhmm <- function(phylogeny,data,times=20,breaks=seq(.1,.7,.1),rate.ca
       if(isTRUE(class(mod)=="try-error")) { next } 
       else { 
         AICc_new <-mod$AICc
-        Solution_new <-mod$solution
-        Solution.se_new <-mod$solution
         Solution.vector_new <-as.vector(mod$solution)
         Solution.se.vector_new <-as.vector(mod$solution.se)
+        n.remov <- i
+        n.percent <- n.remov/N
         
         ### Storing values for each simulation
         AICc <- c(AICc,AICc_new)
         Solution.vector <- rbind(Solution.vector,Solution.vector_new)
         Solution.se.vector <- rbind(Solution.se.vector,Solution.se.vector_new)
+        n.removs <- c(n.removs,n.remov)
+        n.percents <- c(n.percents,n.percent)
+        if(isTRUE(save.models)) {mods<-c(mods,list(mod))} 
               } 
             
     }
   }
-    return(list(AICc_original=AICc.0,Transition_rates_original=Solution.0,SE_transition_rates_original=Solution.se.0,
-                AICc_estimates=AICc,Transition_rates_estimates=data.frame(Solution.vector),SE_transitions_rates_estimates=data.frame(Solution.se.vector)))
+    #Data frame with results
+  estimates<-data.frame(AICc,Solution.vector,Solution.se.vector,n.removs,n.percents)
+  original_trans_vector<-data.frame(t(Solution.vector.0),t(Solution.se.vector.0))
+  
+ return(list(AICc_original=AICc.0,Transition_rates_original=Solution.0,
+              SE_transition_rates_original=Solution.se.0,
+              Original_rates_vectorised=original_trans_vector,
+              results=estimates,models=mods))
+  
  }
 
-#Try and run it
-corhmm_samp_try<-sampling.corhmm(phylogeny = tree,data = regre,times = 10,breaks = seq(.2,.8,.2),rate.cat = 1)
-
+#Try and run it (#Low replicate numbers, only one rate class for simplicity)
+corhmm_samp_try<-sampling.corhmm(phylogeny = tree,data = regre,times = 2,breaks = seq(.2,.8,.2),rate.cat = 1,save.models = T)
+#With more rate classes
 #corhmm_samp_try2<-sampling.corhmm(phylogeny = tree,data = regre,times = 3,breaks = seq(.2,.8,.2),rate.cat = 2)
