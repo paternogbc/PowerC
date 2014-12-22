@@ -6,3 +6,7 @@
 
 ## Load required packages:
 library(caper)
+
+powerCtime <- function(formula,data,times=100,breaks=seq(.1,.9,.1),lambda="ML"){
+          
+}
