@@ -4,7 +4,7 @@ library(caper);library(phylolm);library(phytools)
 
 ### Before: copy and run functions: sampling.pgls(); influential.pgls() and plot.power.pgls()
 
-N <- 50 # Number of species
+N <- 80 # Number of species
 ### Simulating tree
 tree<-pbtree(n=N)    
 plot(tree)
@@ -42,7 +42,3 @@ influ1[[4]]
 plot.power.pgls(samp1,method="sampling")
 plot.power.pgls(samp2,method="sampling")
 plot.power.pgls(influ1,method="influence")
-influ1$results$DFbeta > .72
-
-max(influ1$results$DFbetas)
-
