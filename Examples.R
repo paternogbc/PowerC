@@ -42,7 +42,3 @@ influ1[[4]]
 plot.power.pgls(samp1,method="sampling")
 plot.power.pgls(samp2,method="sampling")
 plot.power.pgls(influ1,method="influence")
-influ1$results$DFbeta > .72
-
-max(influ1$results$DFbetas)
-
