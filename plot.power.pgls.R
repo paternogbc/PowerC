@@ -96,9 +96,9 @@ plot.power.pgls <- function(x, method="sampling"){
                     result.tab <- data.frame(x$results,x$data[vars])
                     p3<-ggplot(result.tab,aes(y=get(vars[1]),
                                               x=get(vars[2]),
-                                              colour=DFbetas),environment=.e,)+
+                                              colour=abs(DFbetas)),environment=.e,)+
                               geom_point(size=3,alpha=.8)+
-                              scale_colour_gradient2( low="blue",midpoint=0, mid="black",high="red",name="")+
+                              scale_colour_gradient( low="black",high="red",name="")+
                               theme(legend.key.width = unit(.2,"cm"),
                                     panel.background=element_rect(fill="white",colour="black"),
                                     panel.grid.major = element_blank(),
@@ -108,9 +108,9 @@ plot.power.pgls <- function(x, method="sampling"){
                               ggtitle("Change in Beta estimate")
                     p4<-ggplot(result.tab,aes(y=get(vars[1]),
                                               x=get(vars[2]),
-                                              colour=DFintercepts),environment=.e,)+
+                                              colour=abs(DFintercepts)),environment=.e,)+
                               geom_point(size=3,alpha=.8)+
-                              scale_colour_gradient2( low="blue",midpoint=0,mid="black", high="red",name="")  +        
+                              scale_colour_gradient( low="black", high="red",name="")  +        
                               theme(legend.key.width = unit(.2,"cm"),
                                     panel.background=element_rect(fill="white",colour="black"),
                                     panel.grid.major = element_blank(),
