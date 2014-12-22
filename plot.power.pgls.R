@@ -62,7 +62,7 @@ plot.power.pgls <- function(x, method="sampling"){
                     ## Power Analysis: beta (percentage of betas > or < then CI)
                     beta.high <- result$betas > beta.0.up
                     beta.low <- result$betas < beta.0.low
-                    samp1$results$beta.out.CI <- beta.high+beta.low
+                    result$beta.out.CI <- beta.high+beta.low
                     power <- as.numeric(1-(with(result,tapply(beta.out.CI,n.removs,sum)))/times)
                     power.tab <- data.frame(breaks,power)
                     p4 <- ggplot(power.tab,aes(y=power,x=breaks))+
