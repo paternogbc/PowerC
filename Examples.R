@@ -4,7 +4,7 @@ library(caper);library(phylolm);library(phytools)
 
 ### Before: copy and run functions: sampling.pgls(); influential.pgls() and plot.power.pgls()
 
-N <- 80 # Number of species
+N <- 50 # Number of species
 ### Simulating tree
 tree<-pbtree(n=N)    
 plot(tree)
@@ -24,15 +24,17 @@ comp.data <- comparative.data(data=regre,phy=tree,vcv=T,vcv.dim=3,names.col="sp"
 mod0 <- pgls(Ly ~Lx, data=comp.data,"ML")
 summary(mod0)
 
+### Estimating time before performing simulations:
+powerCtime(Ly ~ Lx,data=comp.data,times=100,breaks=seq(.1,.9,.1))
+
 ### Example: sampling.pgls
-Ly ~ Lx,data=comp.data,times=50,breaks=c(.1,.9,.1)
-system.time(samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=50,breaks=c(.1,.9,.1)))
+samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=50,breaks=c(.1,.9,.1))
 
 ### You can specify the number of replicates per break interval:
 samp2 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=100,breaks=c(.1,.5,.9))
 
 ### Example: influence.pgls
-system.time(influ1 <- influence.pgls(Ly ~ Lx,data=comp.data))
+influ1 <- influence.pgls(Ly ~ Lx,data=comp.data)
 names(influ1)
 ### Estimated parameters:
 influ1$results
