@@ -85,5 +85,3 @@ plot.power.pgls(samp1,method="sampling")
 plot.power.pgls(samp2,method="sampling")
 plot.power.pgls(influ1,method="influence")
 ```
-
-
