@@ -42,10 +42,6 @@ regre <- data.frame(sp,Ly,Lx)
 comp.data <- comparative.data(data=regre,phy=tree,vcv=T,vcv.dim=3,names.col="sp")
 <<<<<<< HEAD
 
-=======
->>>>>>> gls-fit-
-```
-
 **Fitting regressions:**
 ```{r}
 ### Linear regression (PGLS):
@@ -66,11 +62,11 @@ abline(mod0,col="red",lwd=3)
 samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=50)
 ### You can specify the number of replicates and break intervals:
 samp2 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=100,breaks=c(.1,.5,.9))
-=======
+
 ### Estimating time before performing simulations:
+````{r}
 powerCtime(Ly ~ Lx,data=comp.data,times=100,breaks=seq(.1,.9,.1))
 ```
->>>>>>> gls-fit-
 
 **Performing Sensitive Analysis:** `sampling.pgls`
 ```{r}
@@ -84,10 +80,7 @@ samp2 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=100,breaks=c(.1,.5,.9))
 ```{r}
 ### Example: influence.pgls
 influ1 <- influence.pgls(Ly ~ Lx,data=comp.data)
-<<<<<<< HEAD
-=======
 names(influ1)
->>>>>>> gls-fit-
 ### Estimated parameters:
 influ1$results
 ### Most influential species:
@@ -99,10 +92,3 @@ influ1[[4]]
 plot.power.pgls(samp1,method="sampling")
 plot.power.pgls(samp2,method="sampling")
 plot.power.pgls(influ1,method="influence")
-<<<<<<< HEAD
-```
-
-
-=======
-```
->>>>>>> gls-fit-
