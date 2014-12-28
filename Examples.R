@@ -21,13 +21,22 @@ regre <- data.frame(sp,Ly,Lx)
 comp.data <- comparative.data(data=regre,phy=tree,vcv=T,vcv.dim=3,names.col="sp")
 
 ### Linear regression (PGLS):
-system.time(mod0 <- pgls(Ly ~Lx, data=comp.data,"ML"))
+mod0 <- pgls(Ly ~Lx, data=comp.data,"ML")
 summary(mod0)
 
+### Estimating time before performing simulations:
+powerCtime(Ly ~ Lx,data=comp.data,times=100,breaks=seq(.1,.9,.1))
+
 ### Example: sampling.pgls
+<<<<<<< HEAD
 samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=50)
 names(samp1)
 ### You can specify the number of replicates and break intervals:
+=======
+samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=50,breaks=c(.1,.9,.1))
+
+### You can specify the number of replicates per break interval:
+>>>>>>> gls-fit-
 samp2 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=100,breaks=c(.1,.5,.9))
 
 ### Example: influence.pgls

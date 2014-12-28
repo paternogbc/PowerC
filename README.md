@@ -8,6 +8,7 @@ PowerC is a a group of R functions to perform sampling effort analysis in compar
 	sampling.pgls - Simple sampling effort analysis for PGLS linear regression
 	influential.pgls - Simple (leave-one-out deletion) diagnostics for PGLS linear regression
 	plot.power.pgls - Plot results from sampling.pgls and influential.pgls
+          powerCtime - Estimate time to run simulations with (sampling.pgls and influence.pgls)
 
 
 
@@ -16,6 +17,7 @@ First copy and run these functions from the repository `PowerC`:
 	1. `sampling.pgls`  
           2. `influential.pgls`  
           3. `plot.power.pgls`  
+          4. `powerCtime`
 
 **Required Packages:**
 ```{r}
@@ -38,7 +40,10 @@ regre <- data.frame(sp,Ly,Lx)
 
 ### Organizing comparative data for pgls:
 comp.data <- comparative.data(data=regre,phy=tree,vcv=T,vcv.dim=3,names.col="sp")
+<<<<<<< HEAD
 
+=======
+>>>>>>> gls-fit-
 ```
 
 **Fitting regressions:**
@@ -49,24 +54,40 @@ summary(mod0)
 ```
 **Regression Plots:**
 ```{r}
-plot(y ~ x,c.data$data,pch=16)
+plot(y ~ x,comp.data$data,pch=16)
 abline(mod0,col="red",lwd=3)
 
 ```
 
-**Performing Sensitive Analysis:** `sampling.pgls`
+**Estimating time of simulations:**
 ```{r}
+<<<<<<< HEAD
 ### Example: sampling.pgls
 samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=50)
 ### You can specify the number of replicates and break intervals:
 samp2 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=100,breaks=c(.1,.5,.9))
+=======
+### Estimating time before performing simulations:
+powerCtime(Ly ~ Lx,data=comp.data,times=100,breaks=seq(.1,.9,.1))
+```
+>>>>>>> gls-fit-
 
+**Performing Sensitive Analysis:** `sampling.pgls`
+```{r}
+### Example: sampling.pgls
+samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data)
+### You can specify the number of replicates and break intervals:
+samp2 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=100,breaks=c(.1,.5,.9))
 ```
 
-**Performing influential analysis:** `influential.pgls`
+**Performing influential analysis:** `influence.pgls`
 ```{r}
 ### Example: influence.pgls
 influ1 <- influence.pgls(Ly ~ Lx,data=comp.data)
+<<<<<<< HEAD
+=======
+names(influ1)
+>>>>>>> gls-fit-
 ### Estimated parameters:
 influ1$results
 ### Most influential species:
@@ -78,6 +99,10 @@ influ1[[4]]
 plot.power.pgls(samp1,method="sampling")
 plot.power.pgls(samp2,method="sampling")
 plot.power.pgls(influ1,method="influence")
+<<<<<<< HEAD
 ```
 
 
+=======
+```
+>>>>>>> gls-fit-
