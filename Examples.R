@@ -2,7 +2,11 @@
 ### Required packages:
 library(caper);library(phylolm);library(phytools)
 
-### Before: copy and run functions: sampling.pgls(); influential.pgls() and plot.power.pgls()
+### Before: copy and run functions: 
+# sampling.pgls(); 
+# influential.pgls() 
+# plot.power.pgls()
+# powerCtime()
 
 N <- 80 # Number of species
 ### Simulating tree
@@ -28,11 +32,8 @@ summary(mod0)
 powerCtime(Ly ~ Lx,data=comp.data,times=100,breaks=seq(.1,.9,.1))
 
 ### Example: sampling.pgls
-<<<<<<< HEAD
 samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=50)
-names(samp1)
 ### You can specify the number of replicates and break intervals:
-=======
 samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=50,breaks=c(.1,.9,.1))
 
 ### You can specify the number of replicates per break interval:
