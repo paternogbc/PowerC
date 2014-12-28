@@ -42,7 +42,6 @@ samp2 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=100,breaks=c(.1,.5,.9))
 
 ### Example: influence.pgls
 influ1 <- influence.pgls(Ly ~ Lx,data=comp.data)
-names(influ1)
 ### Estimated parameters:
 influ1$results
 ### Most influential species:
