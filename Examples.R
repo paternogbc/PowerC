@@ -8,7 +8,7 @@ library(caper);library(phylolm);library(phytools)
 # plot.power.pgls()
 # powerCtime()
 
-N <- 80 # Number of species
+N <- 50 # Number of species
 ### Simulating tree
 tree<-pbtree(n=N)    
 plot(tree)
@@ -37,7 +37,6 @@ samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=50)
 samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=50,breaks=c(.1,.9,.1))
 
 ### You can specify the number of replicates per break interval:
->>>>>>> gls-fit-
 samp2 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=100,breaks=c(.1,.5,.9))
 
 ### Example: influence.pgls
