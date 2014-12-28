@@ -6,7 +6,7 @@ Influence analysis for PGLS
 }
 
 \description{
-This function performs 'single deletion analysis' for pgls linear regression
+This function performs simple leave-one-out deletion analysis for PGLS linear regression
 }
 \usage{
 influence.pgls(formula, data, lambda = "ML")
