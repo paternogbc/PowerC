@@ -6,7 +6,7 @@ PowerC is a a group of R functions to perform sampling effort analysis in compar
 ###Functions:
 
 	sampling.pgls - Simple sampling effort analysis for PGLS linear regression
-	influential.pgls - Simple (leave-one-out deletion) diagnostics for PGLS linear regression
+	influence.pgls - Simple (leave-one-out deletion) diagnostics for PGLS linear regression
 	plot.power.pgls - Plot results from sampling.pgls and influential.pgls  
           powerCtime - Estimate time to run simulations with (sampling.pgls and influence.pgls)
 
