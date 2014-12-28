@@ -40,32 +40,13 @@ regre <- data.frame(sp,Ly,Lx)
 
 ### Organizing comparative data for pgls:
 comp.data <- comparative.data(data=regre,phy=tree,vcv=T,vcv.dim=3,names.col="sp")
-<<<<<<< HEAD
+```
 
 **Fitting regressions:**
 ```{r}
 ### Linear regression (PGLS):
 mod0 <- pgls(y ~x, data=c.data,"ML")
 summary(mod0)
-```
-**Regression Plots:**
-```{r}
-plot(y ~ x,comp.data$data,pch=16)
-abline(mod0,col="red",lwd=3)
-
-```
-
-**Estimating time of simulations:**
-```{r}
-<<<<<<< HEAD
-### Example: sampling.pgls
-samp1 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=50)
-### You can specify the number of replicates and break intervals:
-samp2 <- sampling.pgls(Ly ~ Lx,data=comp.data,times=100,breaks=c(.1,.5,.9))
-
-### Estimating time before performing simulations:
-````{r}
-powerCtime(Ly ~ Lx,data=comp.data,times=100,breaks=seq(.1,.9,.1))
 ```
 
 **Performing Sensitive Analysis:** `sampling.pgls`
