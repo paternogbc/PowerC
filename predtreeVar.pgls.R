@@ -67,8 +67,8 @@ predtreeVar.pgls <- function(resp,pred,se.pred,tree,ntree=1,npred=1,method=c("no
   
   statresults<-data.frame(mean=apply(resultados,2,mean),
                           sd_all=apply(resultados,2,sd),
-                          sd_arvore=apply(mean_by_tree,2,sd),
-                          sd_interval=apply(mean_by_randomval,2,sd))[-(1:2),]
+                          sd_tree=apply(mean_by_tree,2,sd),
+                          sd_pred=apply(mean_by_randomval,2,sd))[-(1:2),]
   
   
   output <- list(ntree=ntree,formula=formula,succesful_iterations=nrow(resultados),
