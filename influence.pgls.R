@@ -1,7 +1,7 @@
 ## influential.pgls: Influential analysis for PGLS linear regression
 ## Author: Gustavo Paterno (paternogbc@gmail.com)
 ## Version: 0.2
-## Data created: 26.11.14
+## Data created: 26.11.14.
 
 ## This code is not totally checked, please be aware!
 ##
