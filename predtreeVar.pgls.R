@@ -24,15 +24,16 @@ predtreeVar.pgls <- function(resp,pred,se.pred,tree,ntree=1,npred=1,method=c("no
   
   #Model calculation
   counter=1
+  c.data<-list()
   for (i in 1:length(ntree)) {
     for (j in 1:npred){
       
       #choose a random value in [mean-sd,mean+sd]
       data$variab<-apply(data[,c("pred","se.pred")],1,function(x)funr(x["pred"],x["se.pred"])) 
       
-      #comparative data creation if tree is class=phylo
+      #comparative data creation if tree is class=multiphylo
       if (inherits(tree, "multiPhylo")) {
-        c.data[[i]]<-comparative.data(data=data, phy=tree, names.col="taxa.col", vcv=T, vcv.dim=3) ###
+        c.data[[i]]<-comparative.data(data=data, phy=tree[[i]], names.col="taxa.col", vcv=T, vcv.dim=3) ###
         ModeloSimple<- pgls(resp~variab, c.data[[i]], lambda='ML')
       }
       
