@@ -56,35 +56,28 @@ plot.power.pgls(influ1,method="influence")
 
 ###########Trait variability analysis example#############
 library(caper);library(phylolm);library(phytools)
-#Simulating data and phylogeny:
-N <- 100 # Number of species
 
 ####Example with a single tree#########
+N <- 100 # Number of species
 tree<-pbtree(n=N)
-### Simulating response variable with phylogenetic signal and some standard error
-y <- data.frame(resp=rTrait(n=5, tree, model=c("lambda"),parameters=list(lambda=.8)))
-std <- function(x) sd(x)/sqrt(length(x)) #function for standard error
-y$mean.resp<-rowMeans(y)
-y$se.resp<-apply(y[,1:5],1,std)
-### Simulating explanatory variable
-x <- y$mean.resp + rnorm(N,mean(y$mean.resp),1)    
+### Simulating response variable with phylogenetic signal
+Ly <- rTrait(n=1, tree, model=c("lambda"),parameters=list(lambda=.8))
+### Simulating explanatory variable and its standard error
+Lx <- data.frame(xmean=Ly + rnorm(N,mean(Ly),1),xse=rep(0.5,100))
 ### Including Species names
 sp <- tree$tip.label
 #THE ANALYSIS
-predtreeVar.pgls(resp=x,pred=y$mean.resp,se.pred=y$se.resp,tree,npred=2,method="normal",taxa.col=sp)
+predtreeVar.pgls(resp=Ly,pred=Lx$xmean,se.pred=Lx$xse,tree,npred=2,method="normal",taxa.col=sp)
 
 
 ####Example with a set of trees of class multiphylo############
-multitree <- rmtree(N=10,n=100)
-### Simulating response variable with phylogenetic signal and some standard error
-y <- data.frame(resp=rTrait(n=5, multitree[[1]], model=c("lambda"),parameters=list(lambda=.8)))
-std <- function(x) sd(x)/sqrt(length(x)) #function for standard error
-y$mean.resp<-rowMeans(y)
-y$se.resp<-apply(y[,1:5],1,std)
-### Simulating explanatory variable
-x <- y$mean.resp + rnorm(N,mean(y$mean.resp),1)   
+N <- 100 # Number of species
+multitree <- rmtree(N=50,n=100)
+### Simulating response variable with phylogenetic signal
+Ly <- rTrait(n=1, multitree[[1]], model=c("lambda"),parameters=list(lambda=.8))
+### Simulating explanatory variable and its standard error
+Lx <- data.frame(xmean=Ly + rnorm(N,mean(Ly),1),xse=rep(0.5,100))
 ### Including Species names
 sp <- multitree[[1]]$tip.label               
 #THE ANALYSIS
-predtreeVar.pgls(resp=x,pred=y$mean.resp,se.pred=y$se.resp,tree=multitree,npred=2,method="normal",taxa.col=sp)
-
+predtreeVar.pgls(resp=Ly,pred=Lx$xmean,se.pred=Lx$xse,tree=multitree,ntree=2,npred=2,method="normal",taxa.col=sp)

@@ -18,6 +18,10 @@ predtreeVar.pgls <- function(resp,pred,se.pred,tree,ntree=1,npred=1,method=c("no
   else
     funr <- function(a, b) {runif(1,a-b,a+b)}
   
+  #If the class of tree is multiphylo pick n=ntree random trees
+  if(inherits(tree, "multiPhylo")){trees<-sample(length(tree),ntree,replace=F)}
+  else {trees=1}
+    
   #Create the results data.frame
   resultados<-data.frame("n.tree"=numeric(),"n.pred"=numeric(),"estim"=numeric(),
                          "rsq"=numeric(),"pval"=numeric(),"Aicc"=numeric())
@@ -25,7 +29,7 @@ predtreeVar.pgls <- function(resp,pred,se.pred,tree,ntree=1,npred=1,method=c("no
   #Model calculation
   counter=1
   c.data<-list()
-  for (i in 1:length(ntree)) {
+  for (i in 1:length(trees)) {
     for (j in 1:npred){
       
       #choose a random value in [mean-sd,mean+sd]
@@ -34,13 +38,16 @@ predtreeVar.pgls <- function(resp,pred,se.pred,tree,ntree=1,npred=1,method=c("no
       #comparative data creation if tree is class=multiphylo
       if (inherits(tree, "multiPhylo")) {
         c.data[[i]]<-comparative.data(data=data, phy=tree[[i]], names.col="taxa.col", vcv=T, vcv.dim=3) ###
-        ModeloSimple<- pgls(resp~variab, c.data[[i]], lambda='ML')
+        try(ModeloSimple<- caper::pgls(resp~variab, c.data[[i]], lambda='ML'),TRUE)
       }
       
       else {
         c.data<-comparative.data(data=data, phy=tree, names.col="taxa.col", vcv=T, vcv.dim=3) ###
-        ModeloSimple<- pgls(resp~variab, c.data, lambda='ML')
+        try(ModeloSimple<- caper::pgls(resp~variab, c.data, lambda='ML'),TRUE)
       }
+      
+      if(isTRUE(class(ModeloSimple)=="try-error")) { next }
+      else {
       
       #extract model coefficients
       estim<-summary(ModeloSimple)$coef[2,1]
@@ -57,8 +64,8 @@ predtreeVar.pgls <- function(resp,pred,se.pred,tree,ntree=1,npred=1,method=c("no
       resultados[counter,6]<- Aicc
       counter=counter+1
     }
+   }  
   }
-  
   
   #calculate mean and sd for each parameter
   #variation due to tree choice
